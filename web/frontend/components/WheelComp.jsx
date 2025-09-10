@@ -19,7 +19,7 @@ const WheelComp = ({setWheelInfo})=>{
     const defaultDiscountItems  = [
         {label:"10% OFF" , value:"10OFF"},
         {label:"Free Shipping" , value:"FSHIP"},
-        {label:"No Luck" , vaule:"NIL"},
+        {label:"No Luck" , value:"NIL"},
         {label:"Free Gift" , value:"FREEG"},
         {label:"Gift Card" , value:"GIFTC"},
         {label:"No Luck" , value:"NIL"}
@@ -83,12 +83,17 @@ const WheelComp = ({setWheelInfo})=>{
     // work on this tomorrow :0
     const handleSectionData = (key, value) =>{
         const updated = [...sectionData];
-        updated[key].label = defaultDiscountItems.some((items)=> items.value == value)[0].label
-        updated[key].value = value
-        console.log(updated)
+        // const old_data = sectionData[key];
+        console.log(value)
+        const new_label = defaultDiscountItems.find((item)=> item.value == value).label
+        const new_data = {label:new_label , value:value}
+        updated[key] = new_data
+        // console.log(updated)
+
+        console.log(key , value);
         setSectionData(updated)
         setCountSections(sectionData.length)
-    }
+    } 
 
     const colorPalletOptions = [
         {label:"Black & White" , value:"BW"},

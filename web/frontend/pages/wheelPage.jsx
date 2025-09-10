@@ -3,7 +3,7 @@ import { Page , Layout, Button , Box , Text} from "@shopify/polaris";
 import { Navigation } from "@shopify/polaris";
 import { useState , useRef, useEffect } from "react";
 import { LiveWheelPreview, WheelComp } from "../components";
-import { SuccessMsg, EmailBox } from "../components/utils";
+import { SuccessMsg, EmailBox , InitialMsg, NoLuckMsg} from "../components/utils";
 import {Wheel} from 'spin-wheel'
 
 const WheelPage = ()=>{
@@ -11,7 +11,8 @@ const WheelPage = ()=>{
     const [wheelInfo , setWheelInfo] = useState({})
     const containerRef = useRef(null);
     const [spin , setSpin] = useState(false);
-    const [currIndex , setCurrIndex] = useState(0)
+    const [currIndex , setCurrIndex] = useState(0);
+    const [success , setSuccess] = useState("");
  
 
     // useEffect(()=>{
@@ -54,12 +55,14 @@ const WheelPage = ()=>{
                         setSpin={setSpin}
                         winningIndex={wheelInfo.winningIndex}
                         setCurrIndex={setCurrIndex}
+                        setSuccess={setSuccess}
                         />
                     </div>
                     <Box>
                         <div style={{margin:"20px"}}>
-                            <SuccessMsg/>
-                            <Text alignment="center">{wheelInfo.sectionData ? wheelInfo.sectionData[currIndex].label : "" }</Text>
+                            {success == "" ? <InitialMsg/> : success == "true" ? <SuccessMsg code={wheelInfo.sectionData[currIndex].value}/> : <NoLuckMsg/>}
+        
+                            {/* <Text alignment="center">{wheelInfo.sectionData ? wheelInfo.sectionData[currIndex].value : "" }</Text> */}
                         </div>
                         <div style={{marginTop:"20px"}}>
                             <Button onClick={handleSpin} primary fullWidth>SPIN ME</Button>

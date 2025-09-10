@@ -69,7 +69,9 @@ const LiveWheelPreview = ({container
      , spin
     , setSpin 
     , winningIndex
-    , setCurrIndex })=>{
+    , setCurrIndex
+    , setSuccess
+    })=>{
 
     const wheelRef = useRef(null)
 
@@ -82,6 +84,8 @@ const LiveWheelPreview = ({container
         const winIndex = winningIndex == "-1" ? Math.floor(Math.random() * sections.length) : parseInt(winningIndex);
         wheelRef.current.spinToItem(winIndex , 5000,1,20,1);
     },[spin])
+
+
     
     useEffect(()=>{
 
@@ -118,7 +122,17 @@ const LiveWheelPreview = ({container
 
             onRest: (e)=>{
                 setSpin(false)
-                setCurrIndex(e.currentIndex)
+                setCurrIndex(()=>{
+                    const currIndex = e.currentIndex
+                    console.log(sections[currIndex].value)
+                    if(sections[currIndex].value != "NIL"){
+                        setSuccess(()=>"true")
+                    }
+                    else{
+                        setSuccess(()=>"false")
+                    }
+                    return e.currentIndex
+                })
             },
             
           
