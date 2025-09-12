@@ -3,8 +3,9 @@ import { Page , Layout, Button , Box , Text} from "@shopify/polaris";
 import { Navigation } from "@shopify/polaris";
 import { useState , useRef, useEffect } from "react";
 import { LiveWheelPreview, WheelComp } from "../components";
-import { SuccessMsg, EmailBox , InitialMsg, NoLuckMsg} from "../components/utils";
+import { SuccessMsg, EmailBox , InitialMsg, NoLuckMsg , DiscountCodeItem} from "../components/utils";
 import {Wheel} from 'spin-wheel'
+import DiscountCode from "../components/DiscountCode";
 
 const WheelPage = ()=>{
 
@@ -31,16 +32,18 @@ const WheelPage = ()=>{
             fullWidth
         >
             <TitleBar title="Make a new Wheel!"></TitleBar>
-            <div style={{display:"flex" , width:"100%" , padding:"20px"}}>
-                <Box width="50%" as="div" style={{
+            <div style={{display:"flex" , flexWrap:"wrap", width:"100%" , padding:"20px"}}>
+                <Box  as="div" style={{
+                    width:"50%",
                     display:"flex" ,
                     flexDirection:"column" ,
                     border:"solid black 2px",
                     margin:"10px"
                       }}>
-                    <WheelComp setWheelInfo={setWheelInfo}/>
+                    <WheelComp setWheelInfo={setWheelInfo} setsuccess_message={setSuccess}/>
                 </Box>
-                <Box width="50%" minHeight="100%" style={{display:"flex" ,
+                <Box  minHeight="100%" style={{
+                    display:"flex" ,
                      flexDirection:"column",
                      margin:"10px",
                      border:"2px solid black"}}>
@@ -60,8 +63,12 @@ const WheelPage = ()=>{
                     </div>
                     <Box>
                         <div style={{margin:"20px"}}>
+                            <div style={{margin:"20px"}}>
+                            <EmailBox/>
+                            </div>
+                            <div style={{margin:"20px"}}>
                             {success == "" ? <InitialMsg/> : success == "true" ? <SuccessMsg code={wheelInfo.sectionData[currIndex].value}/> : <NoLuckMsg/>}
-        
+                            </div>
                             {/* <Text alignment="center">{wheelInfo.sectionData ? wheelInfo.sectionData[currIndex].value : "" }</Text> */}
                         </div>
                         <div style={{marginTop:"20px"}}>
@@ -70,6 +77,13 @@ const WheelPage = ()=>{
                     </Box>
                       
                 </Box>
+                <Box as="div" style={{
+                    width:"50%",
+                    display:"flex" ,
+                    flexDirection:"column" ,
+                    border:"solid black 2px",
+                    margin:"10px"
+                }}><DiscountCodeItem/></Box>
 
             </div>
         </Page>

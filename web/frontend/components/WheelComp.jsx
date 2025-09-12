@@ -14,7 +14,7 @@ from "@shopify/polaris"
 import {useState , useRef , useCallback , useEffect} from "react"
 import { LiveWheelPreview } from "./LiveWheelPreview"
 
-const WheelComp = ({setWheelInfo})=>{
+const WheelComp = ({setWheelInfo , setsuccess_message})=>{
 
     const defaultDiscountItems  = [
         {label:"10% OFF" , value:"10OFF"},
@@ -127,6 +127,7 @@ const WheelComp = ({setWheelInfo})=>{
         // setCountSections(6)
         setSectionData(defaultDiscountItems)
         setWheelName("")
+        setsuccess_message("")
     }
 
     const handleWinningIndex = (value)=>{

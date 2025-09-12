@@ -1,10 +1,15 @@
-import { TextField , Text , Box} from "@shopify/polaris"
+import { TextField , Text , Box , Button , Icon} from "@shopify/polaris"
+
+
+
 import DiscountCode from './DiscountCode.jsx'
+
+
 
 
 const SuccessMsg = ({code})=>{
     return (
-        <Box styles={{margin:"20px"}}>
+        <Box>
             <Text alignment="center" 
             fontWeight="700" 
             variant="heading2xl">Congratulations on Winning !!</Text>
@@ -19,7 +24,7 @@ const NoLuckMsg = ()=>{
             <Text alignment="center" fontWeight="700" variant="heading2xl">Better Luck Next Time!!</Text>
         </Box>
     )
-}
+}  
 
 const InitialMsg = ()=>{
     return (
@@ -35,11 +40,40 @@ const InitialMsg = ()=>{
 
 const EmailBox = ()=> {
     return (
-        <Box width="250px">
+        <Box styles={{
+            margin:"20px"
+        }} >
             <TextField 
             label="Your email"
-            
+            alignment="center"
             helpText="Discount code will be sent here!"/>
+        </Box>
+    )
+}
+
+const DiscountCodeItem = ()=>{
+
+
+    const button_style = {
+        border:"none",
+        
+    }
+    return (
+        <Box as="div" style={{
+            width:"150px",
+            margin:"10px",
+            border:"1px dashed black",
+            padding:"5px"
+        }}>
+            <div>
+                this
+            </div>
+            <div style={{
+                width:"50%"
+            }}>
+                <button style={button_style}>edit</button>
+                <button style={button_style}>remove</button>
+            </div>
         </Box>
     )
 }
@@ -47,4 +81,6 @@ const EmailBox = ()=> {
 export {SuccessMsg,
       EmailBox, 
       NoLuckMsg,
-    InitialMsg}
+    InitialMsg,
+    DiscountCodeItem
+}
