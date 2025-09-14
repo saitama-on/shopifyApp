@@ -107,7 +107,8 @@ const WheelPage = ()=>{
                     flexWrap:"wrap",
                     border:"solid black 2px",
                     margin:"10px"
-                }}>{defaultDiscountItems.map((item ,key)=>{
+                }}>
+                {defaultDiscountItems.map((item ,key)=>{
                 return <DiscountCodeItem handleRemove={()=>handleRemove(key)} info={item}/>})}</Box>
 
             </div>
