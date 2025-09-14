@@ -19,7 +19,9 @@ export default function App() {
         <QueryProvider>
           <NavMenu>
             <a href="/" rel="home" />
-            <a href="/wheelpage">Wheel</a>
+            <a href="/wheelpage">Wheel Config</a>
+            
+            <a>My Wheels</a>
           </NavMenu>
           <Routes pages={pages} />
         </QueryProvider>
