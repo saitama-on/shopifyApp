@@ -43,6 +43,10 @@ const WheelPage = ()=>{
 
     }
 
+    const handleAddDiscountCode = () =>{
+        console.log("added")
+    }
+
     const handleRemove=(key)=>{
         const updated_defaultDiscountItems = [...defaultDiscountItems]
         updated_defaultDiscountItems.splice(key,1)
@@ -58,7 +62,7 @@ const WheelPage = ()=>{
             fullWidth
         >
             <TitleBar title="Make a new Wheel!"></TitleBar>
-            <div style={{display:"flex" , flexWrap:"wrap", width:"100%" , padding:"20px"}}>
+            <div style={{display:"flex" , flexWrap:"wrap", width:"100%" , padding:"20px" , maxHeight:"fitContent"}}>
                 <Box  as="div" style={{
                     width:"50%",
                     display:"flex" ,
@@ -101,15 +105,33 @@ const WheelPage = ()=>{
                     </Box>
                       
                 </Box>
-                <Box as="div" style={{
-                    width:"50%",
-                    display:"flex" ,
-                    flexWrap:"wrap",
+                <Box style={{
                     border:"solid black 2px",
+                    width:"50%",
                     margin:"10px"
                 }}>
-                {defaultDiscountItems.map((item ,key)=>{
-                return <DiscountCodeItem handleRemove={()=>handleRemove(key)} info={item}/>})}</Box>
+                    <div style={{
+                        display:"flex",
+                        padding:"5px",
+                        justifyContent:"center",
+                        alignItems:"center"
+
+                    }}>
+                        <h2 style={{width:"80%"}}>Configure Discount codes</h2>
+                        <Button primary size="slim" onClick={handleAddDiscountCode}>Add code</Button>
+                    </div>
+                    <hr></hr>
+                    <Box as="div" style={{
+                        width:"100%",
+                        display:"flex" ,
+                        flexWrap:"wrap",
+                        
+                        
+                    }}>
+                    {defaultDiscountItems.map((item ,key)=>{
+                    return <DiscountCodeItem handleRemove={()=>handleRemove(key)} info={item}/>})}
+                    </Box>
+                </Box>
 
             </div>
         </Page>

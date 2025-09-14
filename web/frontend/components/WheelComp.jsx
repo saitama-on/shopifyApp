@@ -40,7 +40,7 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
             colorPallet:colorPallet,
             winningIndex:winningIndex
         })
-    },[sectionData , colorPallet , winningIndex . wheelInfo])
+    },[sectionData , colorPallet , winningIndex ])
 
     useEffect(()=>{
 
@@ -125,7 +125,7 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
 
 
     const handleSave = ()=>{
-        console.log("Saved")
+        console.log(wheelInfo)
     }
     return (
         <Box 
