@@ -9,12 +9,23 @@ import DiscountCode from "../components/DiscountCode";
 
 const WheelPage = ()=>{
 
-    const [wheelInfo , setWheelInfo] = useState({})
+    const [defaultDiscountItems , setDefaultDiscountItems]  = useState([
+        {label:"10% OFF" , value:"10OFF"},
+        {label:"Free Shipping" , value:"FSHIP"},
+        {label:"No Luck" , value:"NIL"},
+        {label:"Free Gift" , value:"FREEG"},
+        {label:"Gift Card" , value:"GIFTC"},
+        {label:"No Luck" , value:"NILI"}
+    ])
+    
+    const [wheelInfo , setWheelInfo] = useState({
+        defaultDiscountItems: defaultDiscountItems
+    })
     const containerRef = useRef(null);
     const [spin , setSpin] = useState(false);
     const [currIndex , setCurrIndex] = useState(0);
     const [success , setSuccess] = useState("");
- 
+
 
     // useEffect(()=>{
     //     const container = document.createElement("div");
@@ -22,7 +33,22 @@ const WheelPage = ()=>{
     //     const wheel = new Wheel(container);
 
     // },[containerRef])
+    useEffect(()=>{
+        setWheelInfo({...wheelInfo , 
+            defaultDiscountItems:defaultDiscountItems
+        })
+    },[defaultDiscountItems])
 
+    const handleEdit = ()=>{
+
+    }
+
+    const handleRemove=(key)=>{
+        const updated_defaultDiscountItems = [...defaultDiscountItems]
+        updated_defaultDiscountItems.splice(key,1)
+        // console.log(updated_defaultDiscountItems)
+        setDefaultDiscountItems(updated_defaultDiscountItems)
+    }
 
     const handleSpin = ()=>{
         setSpin(true)
@@ -40,9 +66,9 @@ const WheelPage = ()=>{
                     border:"solid black 2px",
                     margin:"10px"
                       }}>
-                    <WheelComp setWheelInfo={setWheelInfo} setsuccess_message={setSuccess}/>
+                    <WheelComp wheelInfo={wheelInfo} setWheelInfo={setWheelInfo} setsuccess_message={setSuccess}/>
                 </Box>
-                <Box  minHeight="100%" style={{
+                 <Box  minHeight="100%" style={{
                     display:"flex" ,
                      flexDirection:"column",
                      margin:"10px",
@@ -52,11 +78,9 @@ const WheelPage = ()=>{
 
                         <LiveWheelPreview   
                         container={containerRef} 
-                        sections={wheelInfo.sectionData} 
-                        colorPallet={wheelInfo.colorPallet}
+                        wheelInfo={wheelInfo}
                         spin={spin}
                         setSpin={setSpin}
-                        winningIndex={wheelInfo.winningIndex}
                         setCurrIndex={setCurrIndex}
                         setSuccess={setSuccess}
                         />
@@ -69,7 +93,7 @@ const WheelPage = ()=>{
                             <div style={{margin:"20px"}}>
                             {success == "" ? <InitialMsg/> : success == "true" ? <SuccessMsg code={wheelInfo.sectionData[currIndex].value}/> : <NoLuckMsg/>}
                             </div>
-                            {/* <Text alignment="center">{wheelInfo.sectionData ? wheelInfo.sectionData[currIndex].value : "" }</Text> */}
+                            <Text alignment="center">{wheelInfo.sectionData ? wheelInfo.sectionData[currIndex].value : "" }</Text> 
                         </div>
                         <div style={{marginTop:"20px"}}>
                             <Button onClick={handleSpin} primary fullWidth>SPIN ME</Button>
@@ -80,10 +104,11 @@ const WheelPage = ()=>{
                 <Box as="div" style={{
                     width:"50%",
                     display:"flex" ,
-                    flexDirection:"column" ,
+                    flexWrap:"wrap",
                     border:"solid black 2px",
                     margin:"10px"
-                }}><DiscountCodeItem/></Box>
+                }}>{defaultDiscountItems.map((item ,key)=>{
+                return <DiscountCodeItem handleRemove={()=>handleRemove(key)} info={item}/>})}</Box>
 
             </div>
         </Page>

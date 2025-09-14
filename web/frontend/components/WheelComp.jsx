@@ -14,47 +14,33 @@ from "@shopify/polaris"
 import {useState , useRef , useCallback , useEffect} from "react"
 import { LiveWheelPreview } from "./LiveWheelPreview"
 
-const WheelComp = ({setWheelInfo , setsuccess_message})=>{
+const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
+ 
 
-    const defaultDiscountItems  = [
-        {label:"10% OFF" , value:"10OFF"},
-        {label:"Free Shipping" , value:"FSHIP"},
-        {label:"No Luck" , value:"NIL"},
-        {label:"Free Gift" , value:"FREEG"},
-        {label:"Gift Card" , value:"GIFTC"},
-        {label:"No Luck" , value:"NIL"}
-    ]
 
-    const [wheelData , setWheelData] = useState({});
     const [wheelname , setWheelName] = useState("");
     const [countSections , setCountSections] = useState(6);
     const [sectionData , setSectionData] = useState();
-    const [percentageText , setPercentageText] = useState("0%")
     const [winningIndex  , setWinningIndex] = useState("-1")
-    const containerRef = useRef(null);
     const [colorPallet , setColorPallet] = useState("SD")
 
     useEffect(()=>{
-        setSectionData(defaultDiscountItems)
+        let newSectionData = [...wheelInfo.defaultDiscountItems]
+        let start=0
+        while(newSectionData.length < countSections){
+            newSectionData.push(wheelInfo.defaultDiscountItems[start])
+        }
+        setSectionData(newSectionData)
     },[])
 
-    useEffect(()=>{
-        if(winningIndex=="-1"){
-            setPercentageText(`Chance : ${(parseFloat(1 /countSections)*100).toPrecision(4)}%`)
-        }
-        else{
-            
-        }
-    },[winningIndex])
-
 
     useEffect(()=>{
-        setWheelInfo({
+        setWheelInfo({...wheelInfo,
             sectionData:sectionData,
             colorPallet:colorPallet,
             winningIndex:winningIndex
         })
-    },[sectionData , colorPallet , winningIndex])
+    },[sectionData , colorPallet , winningIndex . wheelInfo])
 
     useEffect(()=>{
 
@@ -85,7 +71,7 @@ const WheelComp = ({setWheelInfo , setsuccess_message})=>{
         const updated = [...sectionData];
         // const old_data = sectionData[key];
         console.log(value)
-        const new_label = defaultDiscountItems.find((item)=> item.value == value).label
+        const new_label = wheelInfo.defaultDiscountItems.find((item)=> item.value == value).label
         const new_data = {label:new_label , value:value}
         updated[key] = new_data
         // console.log(updated)
@@ -136,18 +122,7 @@ const WheelComp = ({setWheelInfo , setsuccess_message})=>{
         console.log(winningIndex)
     }
 
-    const handleWinPercentage = (index)=>{
-        alert(index)
-        if(winningIndex != "")
-        return (`Chance : ${(parseFloat(1 /countSections)*100).toPrecision(4)}%`)
-        else {
-            if(index == winningIndex){
-                return "100%"
-            }
 
-            return "0%"
-        }
-    }
 
     const handleSave = ()=>{
         console.log("Saved")
@@ -219,7 +194,8 @@ const WheelComp = ({setWheelInfo , setsuccess_message})=>{
 
                                 <Select 
                                 label={`Item #${key+1}`}
-                                options={defaultDiscountItems}
+                                key={key}
+                                options={wheelInfo.defaultDiscountItems}
                                 value={item.value}
                                 onChange={(value)=>handleSectionData(key,value)}
                                 helpText={winningIndex != "-1" ? (key == parseInt(winningIndex) ? "Win ratio: 100%" : "Win ratio: 0%") : `Win ratio: ${(parseFloat(1 /sectionData.length)*100).toPrecision(4)}%`}

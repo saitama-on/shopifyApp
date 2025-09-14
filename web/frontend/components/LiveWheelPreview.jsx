@@ -63,18 +63,23 @@ const pallet ={
 }
 
 
-const LiveWheelPreview = ({container
-     , sections 
-     , colorPallet 
-     , spin
+const LiveWheelPreview = ({
+    container
+    , spin
     , setSpin 
-    , winningIndex
     , setCurrIndex
     , setSuccess
+    , wheelInfo
     })=>{
 
     const wheelRef = useRef(null)
+    const sections = wheelInfo.sectionData ? wheelInfo.sectionData : wheelInfo.defaultDiscountItems
+    const colorPallet = wheelInfo.colorPallet
+    const winningIndex = wheelInfo.winningIndex
 
+    // console.log(defaultDiscountItems)
+
+    // console.log(sections)
     useEffect(()=>{
         if(!wheelRef.current || !spin){
             return
@@ -90,14 +95,16 @@ const LiveWheelPreview = ({container
     useEffect(()=>{
 
         if (!container.current || !sections?.length) return ;
-  
-        
         const items = sections.map((item , key)=>{
             return {
                 label:item.label,
                 value:item.value
             }
         })
+        
+       
+
+        console.log(items)
         // alert(overlay_image)
         const overlay = new Image()
         overlay.src = overlay_image
@@ -146,7 +153,7 @@ const LiveWheelPreview = ({container
         return ()=>{
             container.current.innerHTML="";
         };
-    } , [container , sections , colorPallet])
+    } , [container , wheelInfo])
 
 
     // useEffect(()=>{

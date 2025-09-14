@@ -51,11 +51,13 @@ const EmailBox = ()=> {
     )
 }
 
-const DiscountCodeItem = ()=>{
+const DiscountCodeItem = ({handleRemove , info})=>{
 
 
     const button_style = {
         border:"none",
+        fontSize:"10px"
+
         
     }
     return (
@@ -63,16 +65,20 @@ const DiscountCodeItem = ()=>{
             width:"150px",
             margin:"10px",
             border:"1px dashed black",
-            padding:"5px"
+            padding:"5px",
+            display:"flex"
         }}>
-            <div>
-                this
+            <div style={{
+                width:"70%"
+            }}>
+                {info.value}
             </div>
             <div style={{
-                width:"50%"
+                width:"30%",
+                display:"flex"
             }}>
-                <button style={button_style}>edit</button>
-                <button style={button_style}>remove</button>
+   
+                <button style={button_style} onClick={handleRemove}>remove</button>
             </div>
         </Box>
     )
