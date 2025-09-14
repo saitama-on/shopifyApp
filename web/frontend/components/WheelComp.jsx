@@ -22,7 +22,16 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
     const [countSections , setCountSections] = useState(6);
     const [sectionData , setSectionData] = useState();
     const [winningIndex  , setWinningIndex] = useState("-1")
-    const [colorPallet , setColorPallet] = useState("SD")
+    const [colorPallet , setColorPallet] = useState([
+        "#222222", // deep black
+        "#f5f5f5", // off-white
+        "#444444", // dark gray
+        "#e0e0e0", // light gray
+        "#666666", // medium dark gray
+        "#cccccc", // soft gray
+        "#888888", // mid-gray
+        "#ffffff"  // pure white
+    ])
 
     useEffect(()=>{
         let newSectionData = [...wheelInfo.defaultDiscountItems]
@@ -82,15 +91,64 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
     } 
 
     const colorPalletOptions = [
-        {label:"Black & White" , value:"BW"},
-        {label:"Sunny Day" , value:"SD"},
-        {label:"Red & Pink" , value:"RP"},
-        {label:"Minty Green" , value:"GM"},
-        {label:"Light" , value:"LG"}
+        {label:"Black & White" , value:[
+        "#222222", // deep black
+        "#f5f5f5", // off-white
+        "#444444", // dark gray
+        "#e0e0e0", // light gray
+        "#666666", // medium dark gray
+        "#cccccc", // soft gray
+        "#888888", // mid-gray
+        "#ffffff"  // pure white
+    ]},
+        {label:"Sunny Day" , value:[
+    "#fff3b3",  // pale yellow
+    "#cce6ff",  // pastel blue
+    "#ffe680",  // soft yellow
+    "#b3d9ff",  // soft sky blue
+    "#fff8cc",  // creamy yellow
+    "#d6ecff",  // light blue with soft white
+    "#f0f4c3" ,  // light lime green
+    "#e0f7fa",  // pale turquoise
+    ]},
+        {label:"Red & Pink" , value:[
+    "#b71c1c", // deep red
+    "#ffcdd2", // light pink
+    "#c62828", // dark red
+    "#f8bbd0", // soft pink
+    "#e53935", // medium red
+    "#f48fb1", // pastel pink
+    "#ef5350", // lighter red
+    "#fce4ec"  // pale pink
+    ]},
+        {label:"Minty Green" , value:[
+    "#2e7d32", // deep green
+    "#c8e6c9", // mint green
+    "#388e3c", // forest green
+    "#a5d6a7", // soft mint
+    "#43a047", // vibrant green
+    "#81c784", // pastel green
+    "#66bb6a", // light green
+    "#e8f5e9"  // pale mint
+    ]},
+        {label:"Light" , value:[
+        "#D6A99D",
+        "#FBF3D5",
+        "#D6DAC8",
+        "#9CAFAA"
+    ]}
     ]
 
     const handleColorPallet = (value)=>{
-        setColorPallet(value)
+        let newarr = []
+        for(let i=0 ; i <value.length ; i++){
+            if(value[i] =='#'){
+                const temp = value.slice(i , i+7)
+                newarr.push(temp)
+            }
+        }
+        // console.log(newarr)
+        setColorPallet(newarr)
     }
 
     const count_options = [
@@ -109,7 +167,16 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
     ]
 
     const handleReset= ()=>{
-        setColorPallet("SD")
+        setColorPallet([
+        "#222222", // deep black
+        "#f5f5f5", // off-white
+        "#444444", // dark gray
+        "#e0e0e0", // light gray
+        "#666666", // medium dark gray
+        "#cccccc", // soft gray
+        "#888888", // mid-gray
+        "#ffffff"  // pure white
+    ])
         // setCountSections(6)
         setSectionData(defaultDiscountItems)
         setWheelName("")
