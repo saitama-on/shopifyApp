@@ -7,12 +7,9 @@ import serveStatic from "serve-static";
 import shopify from "./shopify.js";
 import productCreator from "./product-creator.js";
 import PrivacyWebhookHandlers from "./privacy.js";
+import { validateHeaderName } from "http";
 
-const PORT = parseInt(
-  process.env.BACKEND_PORT || process.env.PORT || "3000",
-  10
-);
-
+const PORT = parseInt(process.env.BACKEND_PORT || process.env.PORT || "3000", 10);
 const STATIC_PATH =
   process.env.NODE_ENV === "production"
     ? `${process.cwd()}/frontend/dist`
@@ -20,7 +17,7 @@ const STATIC_PATH =
 
 const app = express();
 
-// Set up Shopify authentication and webhook handling
+// ==================== Shopify Auth & Webhooks ====================
 app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(
   shopify.config.auth.callbackPath,
@@ -32,48 +29,129 @@ app.post(
   shopify.processWebhooks({ webhookHandlers: PrivacyWebhookHandlers })
 );
 
-// If you are adding routes outside of the /api path, remember to
-// also add a proxy rule for them in web/frontend/vite.config.js
-
-app.use("/api/*", shopify.validateAuthenticatedSession());
-
+// ==================== Middleware ====================
 app.use(express.json());
-
-app.get("/api/products/count", async (_req, res) => {
-  const client = new shopify.api.clients.Graphql({
-    session: res.locals.shopify.session,
-  });
-
-  const countData = await client.request(`
-    query shopifyProductCount {
-      productsCount {
-        count
-      }
-    }
-  `);
-
-  res.status(200).send({ count: countData.data.productsCount.count });
-});
-
-app.post("/api/products", async (_req, res) => {
-  let status = 200;
-  let error = null;
-
-  try {
-    await productCreator(res.locals.shopify.session);
-  } catch (e) {
-    console.log(`Failed to process products/create: ${e.message}`);
-    status = 500;
-    error = e.message;
-  }
-  res.status(status).send({ success: status === 200, error });
-});
-
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));
 
-app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
-  return res
+// Adds shop from session to API requests if missing
+const addSessionShopToReqParams = (_req, res, next) => {
+  const shop = res.locals?.shopify?.session?.shop;
+  if (shop && !_req.query.shop) _req.query.shop = shop;
+  next();
+};
+
+// ==================== API Routes ====================
+app.use("/api/*", shopify.validateAuthenticatedSession(), addSessionShopToReqParams);
+
+app.get("/api/products/count", async (_req, res) => {
+  try {
+    const client = new shopify.api.clients.Graphql({
+      session: res.locals.shopify.session,
+    });
+    const countData = await client.request(`
+      query shopifyProductCount {
+        productsCount { count }
+      }
+    `);
+    res.status(200).json({ count: countData.data.productsCount.count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch product count" });
+  }
+});
+
+app.post("/api/products", async (_req, res) => {
+  try {
+    await productCreator(res.locals.shopify.session);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get("/api/discounts", async (_req, res) => {
+  try {
+    const client = new shopify.api.clients.Graphql({
+      session: res.locals.shopify.session,
+    });
+
+    const data = await client.request(`
+      query {
+        codeDiscountNodes(first: 10) {
+          edges {
+            node {
+              codeDiscount {
+                ... on DiscountCodeBasic {
+                  title
+                  summary
+                  status
+                  codes(first: 10) {
+                    nodes { code }
+                  }
+                }
+                ... on DiscountCodeFreeShipping {
+                  title
+                  summary
+                  status
+                  codes(first: 10) {
+                    nodes { code }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `);
+    console.log(data.data.codeDiscountNodes.edges)
+    const code_info = data.data.codeDiscountNodes.edges;
+    res.status(200).json({ code_info });
+  } catch (err) {
+    console.error("Error fetching discount codes:", err);
+    res.status(500).json({ error: "Failed to fetch discount codes" });
+  }
+});
+
+app.get("/api/wheel" , async(_req,res) => {
+  // console.log("hellop")
+ try{
+      const client = new shopify.api.clients.Graphql({
+      session: res.locals.shopify.session,
+      })
+      // console.log(client)
+
+      const data = await client.request(`
+        query {
+          metaobjectDefinitions(first: 10) {
+            edges {
+               node {
+                    id
+                    name
+                    type
+                  }
+                }
+            }
+          }`
+      )
+      console.log(typeof(data))
+      res.status(200).json({message:"Ok"})
+  }
+  catch(err){
+    res.status(500).json({err})
+  }
+})
+
+// ==================== Frontend Route ====================
+// Only run ensureInstalledOnShop for frontend, skip /api
+app.use("/*", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  return shopify.ensureInstalledOnShop()(req, res, next);
+});
+
+app.use("/*", (_req, res) => {
+  res
     .status(200)
     .set("Content-Type", "text/html")
     .send(
@@ -83,4 +161,7 @@ app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res, _next) => {
     );
 });
 
-app.listen(PORT);
+// ==================== Start Server ====================
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

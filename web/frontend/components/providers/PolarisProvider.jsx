@@ -45,9 +45,14 @@ function AppBridgeLink({ url, children, external, ...rest }) {
  */
 export function PolarisProvider({ children }) {
   const translations = getPolarisTranslations();
+//   const appBridgeConfig = {
+//   apiKey: import.meta.env.VITE_SHOPIFY_API_KEY,
+//   host: new URLSearchParams(window.location.search).get("host"),
+//   forceRedirect: true,
+// };
 
   return (
-    <AppProvider i18n={translations} linkComponent={AppBridgeLink}>
+    <AppProvider i18n={translations} linkComponent={AppBridgeLink} >
       {children}
     </AppProvider>
   );

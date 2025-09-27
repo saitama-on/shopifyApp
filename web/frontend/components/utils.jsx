@@ -1,5 +1,5 @@
 import { TextField , Text , Box , Button , Icon} from "@shopify/polaris"
-
+import { useState } from "react"
 
 
 import DiscountCode from './DiscountCode.jsx'
@@ -9,7 +9,7 @@ import DiscountCode from './DiscountCode.jsx'
 
 const SuccessMsg = ({code})=>{
     return (
-        <Box>
+        <Box style={{width:"100%"}}>
             <Text alignment="center" 
             fontWeight="700" 
             variant="heading2xl">Congratulations on Winning !!</Text>
@@ -38,7 +38,11 @@ const InitialMsg = ()=>{
 
 
 
-const EmailBox = ()=> {
+const EmailBox = ({setUserEmail , userEmail , errMsg})=> {
+
+    const handleUserEmail = (value)=>{
+        setUserEmail(value)
+    }
     return (
         <Box styles={{
             margin:"20px"
@@ -46,25 +50,45 @@ const EmailBox = ()=> {
             <TextField 
             label="Your email"
             alignment="center"
-            helpText="Discount code will be sent here!"/>
+            helpText={errMsg =="" ? "Discount codes will be sent here" : errMsg}
+            value={userEmail}
+            onChange={handleUserEmail}/>
         </Box>
     )
 }
 
-const DiscountCodeItem = ({handleRemove , info})=>{
-
-
+const DiscountCodeItem = ({handleRemove , 
+    info , setWheelInfo ,index})=>{
+        // console.log(index)
+        // console.log(info)
+    const [labelName , setLabelName] = useState(info.label)
     const button_style = {
         border:"none",
         fontSize:"10px"
+    }
 
-        
+    const handleLabelChange = (e)=>{
+        setLabelName(e.target.value)
+    }
+
+    const handleLabelOk = () =>{
+        // console.log(index)
+        setWheelInfo(prev => {
+            const new_arr = prev.defaultDiscountItems;
+            new_arr[index].label = labelName
+
+            return {...prev , 
+                defaultDiscountItems:new_arr
+            }
+        })
     }
     return (
+    <div style={{display:"flex" , flexDirection:"column", 
+        border:"1px dashed black", margin:"10px"
+
+    }}>
         <Box as="div" style={{
-            width:"150px",
-            margin:"10px",
-            border:"1px dashed black",
+            width:"200px",
             padding:"5px",
             display:"flex"
         }}>
@@ -75,12 +99,34 @@ const DiscountCodeItem = ({handleRemove , info})=>{
             </div>
             <div style={{
                 width:"30%",
-                display:"flex"
+                display:"flex",
+                fontSize:"0.5rem"
             }}>
    
-                <button style={button_style} onClick={handleRemove}>remove</button>
+                <Button destructive size="micro" plain onClick={handleRemove}>Remove</Button>
+            </div>
+
+        </Box>
+        <Box as="div" style={{
+            width:"200px",
+            padding:"5px",
+            display:"flex"
+        }}>
+        <label style={{width:"30%" , fontSize:"0.7rem"}}>Label:</label>
+        <input style={{width:"70%"}} value={labelName} onChange={handleLabelChange}></input>
+        <button onClick={handleLabelOk}>OK</button>
+        </Box>
+        <Box as="div" style={{
+            width:"200px",
+            padding:"5px",
+            display:"flex"
+        }}>
+            <div style={{width:"100%" , display:"flex"}}>
+            <p style={{width:"30%" , fontSize:"0.7rem"}}>Description:</p>
+            <p style={{marginLeft:"5px",width:"70%" , fontSize:"0.7rem"}}> {info.description}</p>
             </div>
         </Box>
+    </div>
     )
 }
 

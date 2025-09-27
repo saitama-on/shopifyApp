@@ -9,7 +9,8 @@ RangeSlider,
 Grid,
 Stack,
 Select,
-ButtonGroup , Button} 
+ButtonGroup , Button,
+LegacyStack} 
 from "@shopify/polaris"
 import {useState , useRef , useCallback , useEffect} from "react"
 import { LiveWheelPreview } from "./LiveWheelPreview"
@@ -20,77 +21,10 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
 
     const [wheelname , setWheelName] = useState("");
     const [countSections , setCountSections] = useState(6);
-    const [sectionData , setSectionData] = useState();
+    const [sectionData , setSectionData] = useState([]);
     const [winningIndex  , setWinningIndex] = useState("-1")
-    const [colorPallet , setColorPallet] = useState([
-        "#222222", // deep black
-        "#f5f5f5", // off-white
-        "#444444", // dark gray
-        "#e0e0e0", // light gray
-        "#666666", // medium dark gray
-        "#cccccc", // soft gray
-        "#888888", // mid-gray
-        "#ffffff"  // pure white
-    ])
-
-    useEffect(()=>{
-        let newSectionData = [...wheelInfo.defaultDiscountItems]
-        let start=0
-        while(newSectionData.length < countSections){
-            newSectionData.push(wheelInfo.defaultDiscountItems[start])
-        }
-        setSectionData(newSectionData)
-    },[])
-
-
-    useEffect(()=>{
-        setWheelInfo({...wheelInfo,
-            sectionData:sectionData,
-            colorPallet:colorPallet,
-            winningIndex:winningIndex
-        })
-    },[sectionData , colorPallet , winningIndex ])
-
-    useEffect(()=>{
-
-        if(!sectionData) return
-        if(countSections <= sectionData.length){
-            setSectionData(sectionData.slice(0,countSections));
-        }
-        else{
-            const newSections = [...sectionData];
-            for(let i =sectionData.length ; i<countSections ; i++){
-                newSections.push(sectionData[i]? sectionData[i] : defaultDiscountItems[i] ? defaultDiscountItems[i] : {label:"10% OFF" , value:"10OFF"})
-            }
-
-        setSectionData(newSections)
-        }
-    } , [countSections])
-
-    const handleCountSections = (value)=>{
-        // alert(value)
-        setCountSections(Number(value))
-
-    }
-    const handleName = (value)=>{
-        setWheelName(value)
-    }
-    // work on this tomorrow :0
-    const handleSectionData = (key, value) =>{
-        const updated = [...sectionData];
-        // const old_data = sectionData[key];
-        console.log(value)
-        const new_label = wheelInfo.defaultDiscountItems.find((item)=> item.value == value).label
-        const new_data = {label:new_label , value:value}
-        updated[key] = new_data
-        // console.log(updated)
-
-        console.log(key , value);
-        setSectionData(updated)
-        setCountSections(sectionData.length)
-    } 
-
-    const colorPalletOptions = [
+    const [colorPallet , setColorPallet] = useState("Sunny Day");
+        const colorPalletOptions = [
         {label:"Black & White" , value:[
         "#222222", // deep black
         "#f5f5f5", // off-white
@@ -138,17 +72,81 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
         "#9CAFAA"
     ]}
     ]
+    const [winIndexOptions , setWinIndexOptions] = useState([{label:"random" , value:-1}])
+
+
+    useEffect(()=>{
+        if(!wheelInfo.defaultDiscountItems?.length) return
+        let newSectionData = [...wheelInfo.defaultDiscountItems]
+        if(newSectionData == wheelInfo.defaultDiscountItems) return
+        let start=0
+        while (newSectionData.length < countSections) {
+        const nextItem = wheelInfo.defaultDiscountItems[newSectionData.length % wheelInfo.defaultDiscountItems.length];
+        newSectionData.push(nextItem);
+        }
+        setSectionData(newSectionData)
+    },[wheelInfo.defaultDiscountItems])
+
+
+    useEffect(()=>{
+        //find the array of colors from options whole label is colorPallet
+        const colorArray = colorPalletOptions.find((item) => item.label === colorPallet)
+        setWheelInfo({...wheelInfo,
+            colorPallet:colorArray.value,
+            winningIndex:winningIndex,
+            sectionData:sectionData,
+            wheelName : wheelname
+        })
+        const new_win_arr = sectionData.map((item,key) =>({label:`${key+1}`, value:key}));
+        // console.log(new_win_arr)
+        setWinIndexOptions([{label:"random" , value:-1}, ...new_win_arr ])
+        // console.log(winningIndex)
+    },[sectionData , colorPallet , winningIndex , wheelname])
+
+    useEffect(()=>{
+
+        if(!sectionData) return
+        if(countSections <= sectionData.length){
+            setSectionData(sectionData.slice(0,countSections));
+        }
+        else{
+            const newSections = [...sectionData];
+            for(let i =sectionData.length ; i<countSections ; i++){
+               
+                    newSections.push(sectionData[i%sectionData.length])
+                
+            }
+
+        setSectionData(newSections)
+        }
+    } , [countSections])
+
+    const handleCountSections = (value)=>{
+        // alert(value)
+        setCountSections(Number(value))
+
+    }
+    const handleName = (value)=>{
+        setWheelName(value)
+    }
+    // work on this tomorrow :0
+    const handleSectionData = (key, value) =>{
+        const updated = [...sectionData];
+        // const old_data = sectionData[key];
+        console.log(value)
+        const new_label = wheelInfo.defaultDiscountItems.find((item)=> item.value == value).label
+        const new_data = {label:new_label , value:value}
+        updated[key] = new_data
+        // console.log(updated)
+
+        console.log(key , value);
+        setSectionData(updated)
+        setCountSections(sectionData.length)
+    } 
+
 
     const handleColorPallet = (value)=>{
-        let newarr = []
-        for(let i=0 ; i <value.length ; i++){
-            if(value[i] =='#'){
-                const temp = value.slice(i , i+7)
-                newarr.push(temp)
-            }
-        }
-        // console.log(newarr)
-        setColorPallet(newarr)
+        setColorPallet(value)
     }
 
     const count_options = [
@@ -167,18 +165,10 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
     ]
 
     const handleReset= ()=>{
-        setColorPallet([
-        "#222222", // deep black
-        "#f5f5f5", // off-white
-        "#444444", // dark gray
-        "#e0e0e0", // light gray
-        "#666666", // medium dark gray
-        "#cccccc", // soft gray
-        "#888888", // mid-gray
-        "#ffffff"  // pure white
-    ])
+        setColorPallet("Sunny Day")
         // setCountSections(6)
-        setSectionData(defaultDiscountItems)
+        setSectionData
+        (defaultDiscountItems)
         setWheelName("")
         setsuccess_message("")
     }
@@ -191,18 +181,17 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
 
 
 
+
     const handleSave = ()=>{
         console.log(wheelInfo)
     }
     return (
         <Box 
-        borderColor="#000"
-        background="#000"
-        style={{marginLeft:"20px" , height:"100vh"}}
+        style={{marginLeft:"20px"}}
         >
             <Form>
                 <FormLayout >
-                    <Stack spacing="loose" wrap={true}>
+                    <LegacyStack spacing="loose" wrap={true}>
                         <Box width="100%">
                             <TextField 
                                 label="Wheel Name"
@@ -222,7 +211,7 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
                         <Box width="200px">
                             <Select
                                 label="Color Pallet"
-                                options={colorPalletOptions}
+                                options={colorPalletOptions.map(opt => ({ label: opt.label, value: opt.label }))}
                                 value={colorPallet}
                                 onChange={handleColorPallet}
                                 
@@ -233,24 +222,16 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
                             <Select
                                 label="Winning Index"
                                 value={winningIndex}
-                                options={[
-                                    {label:"random",value:"-1"},
-                                    {label:"1",value:"0"},
-                                    {label:"2",value:"1"},
-                                    {label:"3",value:"2"},
-                                    {label:"4",value:"3"},
-                                    {label:"5",value:"4"},
-                                    {label:"6",value:"5"},
-                                ]}
+                                options={winIndexOptions.map(item => item)}
                                 onChange={handleWinningIndex}
                                 helpText="Choose a Winning Item"
                                
                             
                                 />
                         </Box>
-                    </Stack>
+                    </LegacyStack>
 
-                    <Stack spacing="loose" wrap={true}>
+                    <LegacyStack spacing="loose" wrap={true}>
           
                         {sectionData && sectionData.map((item , key)=>{
                             return (
@@ -263,7 +244,7 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
                                 label={`Item #${key+1}`}
                                 key={key}
                                 options={wheelInfo.defaultDiscountItems}
-                                value={item.value}
+                                value={item?.value}
                                 onChange={(value)=>handleSectionData(key,value)}
                                 helpText={winningIndex != "-1" ? (key == parseInt(winningIndex) ? "Win ratio: 100%" : "Win ratio: 0%") : `Win ratio: ${(parseFloat(1 /sectionData.length)*100).toPrecision(4)}%`}
                                 />
@@ -271,17 +252,13 @@ const WheelComp = ({wheelInfo, setWheelInfo , setsuccess_message})=>{
                             )
                         })}
 
-                    </Stack>
+                    </LegacyStack>
                     {/* <Box minHeight="500px">
                         <h1> Live Preview</h1>
                         <div ref={containerRef} style={{height:"500px"}}></div>
                         {containerRef.current &&<LiveWheelPreview container={containerRef.current} sections={sectionData} colorPallet={colorPallet}/>}
                     </Box>
                     */}   
-                    <ButtonGroup>
-                        <Button onClick={handleReset}>Reset</Button>
-                        <Button primary onClick={handleSave}>Save</Button>
-                    </ButtonGroup> 
 
                 </FormLayout>
             </Form>

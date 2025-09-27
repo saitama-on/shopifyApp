@@ -37,22 +37,16 @@ const LiveWheelPreview = ({
     useEffect(()=>{
 
         if (!container.current || !sections?.length) return ;
+        container.current.innerHTML="";
         const items = sections.map((item , key)=>{
             return {
-                label:item.label,
-                value:item.value
+                label:item?.label,
+                value:item?.value
             }
         })
         
-       
-
-        // console.log(items)
-        // alert(overlay_image)
         const overlay = new Image()
         overlay.src = overlay_image
-
-
-
         const wheel = new Wheel(container.current , {
             items :items,
             itemLabelAlign:"center" ,
@@ -90,18 +84,8 @@ const LiveWheelPreview = ({
 
         })
         wheelRef.current = wheel
-        //  alert(pallet[colorPallet])
-        // alert(pallet[colorPallet])
-        return ()=>{
-            container.current.innerHTML="";
-        };
-    } , [container , wheelInfo])
+    } ,[wheelInfo])
 
-
-    // useEffect(()=>{
-    //     wheelRef.spin()
-    // },[spin])
-    
     return null
 
 
